@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miter Saw Timeline V5.2</title>
+    <!-- Use Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- Versioned CSS to force refresh -->
+    <link rel="stylesheet" href="style.css?v=5.4">
+</head>
+
+<body>
+
+    <!-- Header with Dropdown Menus -->
+    <div id="top-bar">
+        <!-- Menu 1: Report Type -->
+        <div class="nav-item dropdown" id="menu-report">
+            <span class="dropdown-label">Year Report</span>
+            <div class="nav-arrow"></div>
+            <div class="dropdown-content">
+                <div class="dropdown-option" data-value="timeline">Time Line</div>
+                <div class="dropdown-option active" data-value="year-report">Year Report</div>
+            </div>
+        </div>
+        <div class="separator">|</div>
+
+        <!-- Menu 2: Tool Type -->
+        <div class="nav-item dropdown" id="menu-tool">
+            <span class="dropdown-label">Miter Saw</span>
+            <div class="nav-arrow"></div>
+            <div class="dropdown-content">
+                <div class="dropdown-option active" data-value="miter-saw">Miter Saw</div>
+                <div class="dropdown-option" data-value="table-saw">Table Saw</div>
+            </div>
+        </div>
+        <div class="separator">|</div>
+
+        <!-- Menu 3: Region -->
+        <div class="nav-item dropdown" id="menu-region">
+            <span class="dropdown-label">NA</span>
+            <div class="nav-arrow"></div>
+            <div class="dropdown-content">
+                <div class="dropdown-option" data-value="eu">EU</div>
+                <div class="dropdown-option active" data-value="na">NA</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper">
+
+        <!-- a: Sidebar (Time Axis) -->
+        <div id="sidebar">
+            <button class="nav-arrow-btn up"></button>
+            <div id="year-list">
+                <!-- Year buttons injected by JS -->
+            </div>
+            <button class="nav-arrow-btn down"></button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="main-view">
+
+            <!-- Header Row: Title & New Model -->
+            <div class="header-row">
+                <div id="brand-card">
+                    <span id="brand-title">BOSCH</span>
+                </div>
+
+                <div class="new-model-group">
+                    <span class="new-model-text">New Model</span>
+                    <div class="chevron-red-down"></div>
+                </div>
+            </div>
+
+            <!-- Top Description (Spans full width of main view) -->
+            <div id="year-desc-box">
+                <p id="year-desc-text">Select a year to view details.</p>
+            </div>
+
+            <!-- Split Row: b (Thumbs) | c (Right Section) -->
+            <div id="content-split-row">
+
+                <!-- b: Thumb Grid -->
+                <div id="thumb-grid">
+                    <!-- Thumb cards injected by JS -->
+                </div>
+
+                <!-- c: Right Section (Specs + Img + Desc) -->
+                <div id="c-section">
+
+                    <!-- c-top: Specs + Feature Image -->
+                    <div id="c-top">
+                        <!-- Specs -->
+                        <div id="spec-panel">
+                            <!-- Spec rows injected by JS -->
+                        </div>
+
+                        <!-- Feature Image -->
+                        <div id="feature-image-box">
+                            <img id="feature-image" src="" alt="Feature Model" style="display:none;">
+                        </div>
+                    </div>
+
+                    <!-- c-bottom: Bottom Description -->
+                    <div id="bottom-desc-box">
+                        <p id="bottom-desc-text">Model description details...</p>
+                    </div>
+
+                </div> <!-- End c-section -->
+            </div> <!-- End content-split-row -->
+
+        </div> <!-- End main-view -->
+
+    </div> <!-- End content-wrapper -->
+
+    <!-- Load PapaParse -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="app.js?v=6.0"></script>
+</body>
+
+</html>

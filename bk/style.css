@@ -1,0 +1,797 @@
+:root {
+    --bg-dark: #121212;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --accent-color: #00d4ff;
+    --accent-glow: rgba(0, 212, 255, 0.4);
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --timeline-line-color: #444;
+
+    /* ========== 版面調整區 (只改這裡) ========== */
+    --axis-top: 500px;
+    /* ← 軸線位置：改這個調整上方空間 (越大=往下移) */
+    --layout-gap: 10px;
+    /* ← 下方間隙：節點到說明框的距離 */
+    --node-extent: 200px;
+    /* 節點向下延伸的高度 (通常不用改) */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    /* App-like feel */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Background Effect */
+.app-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
+    z-index: -2;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+/* Glassmorphism Utility */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+}
+
+/* Toolbar (Header) */
+.toolbar {
+    height: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    z-index: 100;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand i {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+}
+
+.title-group h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+
+.title-group h2 {
+    font-size: 0.8rem;
+    margin: 0;
+    color: var(--text-secondary);
+    font-weight: 300;
+}
+
+.controls-group {
+    display: flex;
+    gap: 20px;
+}
+
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.icon-btn:hover {
+    color: #fff;
+}
+
+input[type=range] {
+    width: 100px;
+    accent-color: var(--accent-color);
+}
+
+/* Timeline Scroll Container */
+.timeline-scroll-container {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
+    /* Enable vertical scroll to see 1100px tall content */
+    position: relative;
+    /* Center the track vertically */
+    display: flex;
+    align-items: center;
+    background: var(--bg-dark);
+    /* Custom Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) #222;
+}
+
+.timeline-scroll-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.timeline-scroll-container::-webkit-scrollbar-track {
+    background: #222;
+}
+
+.timeline-scroll-container::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 4px;
+}
+
+/* Timeline Track */
+.timeline-track {
+    display: flex;
+    align-items: center;
+    /* Align items to the center axis */
+    padding-left: 100px;
+    padding-right: 100px;
+    position: relative;
+    height: 1100px;
+    /* FIXED: 300px axis + node vertical span + 60px gap + desc */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.timeline-track.loaded {
+    opacity: 1;
+}
+
+/* The Main Axis Line */
+.timeline-track::before {
+    content: '';
+    position: absolute;
+    top: var(--axis-top);
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #444;
+    z-index: 0;
+    transform: translateY(-50%);
+}
+
+/* Year Block */
+.year-block {
+    position: relative;
+    flex-shrink: 0;
+    height: 100%;
+    /* Full height of track */
+    display: flex;
+    align-items: center;
+    /* Center content vertically relative to line */
+}
+
+/* Year Label (Big Background Number) */
+.year-label {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 6rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.03);
+    z-index: 0;
+    pointer-events: none;
+    line-height: 1;
+}
+
+/* Year Marker on the line */
+.year-marker {
+    position: absolute;
+    top: var(--axis-top);
+    left: 0;
+    width: 4px;
+    height: 30px;
+    background: var(--text-secondary);
+    transform: translateY(-50%);
+    border-radius: 2px;
+}
+
+.year-marker::after {
+    content: attr(data-year);
+    position: absolute;
+    top: 40px;
+    left: -20px;
+    width: 44px;
+    text-align: center;
+    font-family: 'Oswald';
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Description Box (Large Card Below) */
+.year-description {
+    position: absolute;
+    /* 自動計算: 軸線 + 節點向下延伸 + 間隙 */
+    top: calc(var(--axis-top) + var(--node-extent) + var(--layout-gap));
+    bottom: auto;
+    left: 60px;
+    /* Offset from year start */
+    width: 350px;
+    background: #fff;
+    /* White background as in reference */
+    color: #111;
+    /* Dark text */
+    padding: 20px;
+    border-radius: 20px;
+    /* Rounded corners */
+    font-size: 1rem;
+    line-height: 1.5;
+    z-index: 5;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.year-description h4 {
+    margin: 0;
+    color: #000;
+    font-family: 'Oswald';
+    text-transform: uppercase;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding-bottom: 5px;
+    flex: 1;
+    /* Take available width */
+}
+
+/* Collapsible Logic */
+.year-description .toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+    padding: 5px;
+}
+
+.year-description .toggle-btn:hover {
+    color: #000;
+}
+
+.year-description.collapsed .toggle-btn {
+    transform: rotate(-90deg);
+}
+
+.year-description.collapsed p {
+    display: none;
+}
+
+.year-description.collapsed {
+    padding-bottom: 15px;
+    /* Tighter padding when collapsed */
+    width: auto;
+    /* Shrink if needed, or keep width */
+}
+
+.desc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.desc-header h4 {
+    border-bottom: none;
+    /* Removed border from h4, moved to header container */
+    padding-bottom: 0;
+    margin: 0;
+}
+
+/* Nodes Container */
+.nodes-container {
+    position: absolute;
+    top: var(--axis-top);
+    left: 0;
+    width: 100%;
+    height: 0;
+    /* Wrapper has no height, just position anchor */
+    display: flex;
+    align-items: center;
+    /* Align based on axis */
+}
+
+/* Node (The Model) */
+.node {
+    position: absolute;
+    /* We will use left style in JS */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 140px;
+    /* Fixed width for better centering */
+}
+
+/* 
+   Staggered Placement Logic
+   .node-top: Image ABOVE line
+   .node-bottom: Image BELOW line
+*/
+
+/* Top Node Layout */
+.node-top {
+    transform-origin: bottom center;
+    bottom: 0px;
+    /* Aligned to axis */
+    padding-bottom: 40px;
+    /* Distance from line */
+}
+
+.node-top::after {
+    /* Connecting Line */
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    height: 40px;
+    /* Matches padding */
+    background: #666;
+    z-index: -1;
+}
+
+/* Bottom Node Layout */
+.node-bottom {
+    transform-origin: top center;
+    top: 0px;
+    /* Aligned to axis */
+    padding-top: 40px;
+    /* Distance from line */
+    flex-direction: column-reverse;
+    /* Flip content order */
+}
+
+.node-bottom::after {
+    /* Connecting Line */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 40px;
+    background: #666;
+    z-index: -1;
+}
+
+.node:hover {
+    z-index: 100 !important;
+    transform: scale(1.1);
+}
+
+/* Customize Node Label positions */
+.node-top .node-label {
+    margin-top: 10px;
+}
+
+.node-bottom .node-label {
+    margin-bottom: 10px;
+}
+
+/* Image Wrapper */
+.node-img-wrapper {
+    width: 100px;
+    height: 100px;
+    background: #ddd;
+    /* Light grey placeholder bg */
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #444;
+    transition: border-color 0.3s;
+}
+
+.node:hover .node-img-wrapper {
+    border-color: var(--accent-color);
+}
+
+.node-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Axis Dot */
+.node-axis-dot {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    /* Larger dot */
+    height: 14px;
+    background: #ccc;
+    border-radius: 50%;
+    z-index: 10;
+    border: 2px solid var(--bg-dark);
+}
+
+.node:hover .node-axis-dot {
+    background: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Specific Dot Positions based on Top/Bottom */
+.node-top .node-axis-dot {
+    bottom: -7px;
+    /* Half height to center on line */
+}
+
+.node-bottom .node-axis-dot {
+    top: -7px;
+}
+
+/* Label Card */
+.node-label {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-align: center;
+    width: 120px;
+}
+
+.node-brand {
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.node-model {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    display: block;
+}
+
+/* Loading Indicator */
+.loading-container {
+    display: none;
+    /* Hidden by default */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--accent-color);
+    text-align: center;
+    z-index: 100;
+}
+
+.loading-container i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+.loading-container p {
+    font-family: 'Oswald';
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+    color: #fff;
+    animation: pulse 2s infinite;
+}
+
+.error-msg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.1);
+    border: 1px solid #ff4d4d;
+    padding: 20px 40px;
+    border-radius: 8px;
+    font-family: 'Inter';
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.empty-msg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-secondary);
+    font-family: 'Oswald';
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.6;
+    }
+}
+
+/* Side Panel */
+.side-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 400px;
+    border-left: 1px solid var(--glass-border);
+    background: rgba(18, 18, 18, 0.95);
+    /* Ensure readability */
+    backdrop-filter: blur(15px);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    /* Ensure on top */
+}
+
+.side-panel.open {
+    transform: translateX(0);
+}
+
+.panel-header {
+    height: 70px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.panel-header h3 {
+    font-family: 'Oswald';
+    letter-spacing: 2px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.close-panel {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+}
+
+.panel-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+    background-color: var(--glass-border);
+}
+
+.detail-img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.detail-brand {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.detail-model {
+    font-family: 'Oswald';
+    font-size: 2.5rem;
+    margin: 0 0 20px 0;
+    line-height: 1.1;
+}
+
+.detail-desc {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+
+/* Spec Grid */
+.spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.spec-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.spec-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.spec-value {
+    font-family: 'Oswald';
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: 300;
+}
+
+/* Spec Full Width */
+.spec-full-width {
+    margin-bottom: 25px;
+    background: rgba(0, 212, 255, 0.05);
+    border-left: 3px solid var(--accent-color);
+    padding: 15px;
+    border-radius: 0 4px 4px 0;
+}
+
+.spec-label-block {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.spec-text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #fff;
+}
+
+/* Reference Links */
+.ref-links-group {
+    margin-top: 30px;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 20px;
+}
+
+.ref-links-group h3 {
+    font-family: 'Oswald';
+    letter-spacing: 1px;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0 0 15px 0;
+}
+
+.ref-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ref-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.ref-btn:hover {
+    background: var(--accent-color);
+    color: #000;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.lightbox.active {
+    display: flex;
+    opacity: 1;
+}
+
+.lightbox-content {
+    max-width: 90%;
+    max-height: 90%;
+    position: relative;
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 4px;
+    box-shadow: 0 0 50px rgba(0, 212, 255, 0.2);
+}
+
+.close-lightbox {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+}

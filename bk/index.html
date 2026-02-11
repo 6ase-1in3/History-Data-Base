@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miter Saw Evolution Timeline</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Oswald:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark-theme">
+
+    <div class="app-background"></div>
+
+    <div class="app-container">
+        <!-- Header / Controls -->
+        <header class="toolbar glass-panel">
+            <div class="brand">
+                <i class="fas fa-saw"></i>
+                <div class="title-group">
+                    <h1>TIMELINE</h1>
+                    <h2>Miter Saw Evolution</h2>
+                </div>
+            </div>
+
+            <div class="controls-group">
+                <div class="zoom-controls">
+                    <button id="zoom-out" class="icon-btn"><i class="fas fa-minus"></i></button>
+                    <div class="slider-wrapper">
+                        <input type="range" id="zoom-slider" min="100" max="400" value="180" step="10">
+                    </div>
+                    <button id="zoom-in" class="icon-btn"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Timeline Area -->
+        <main class="timeline-scroll-container" id="timeline-container">
+            <div class="timeline-track" id="timeline-track">
+                <!-- Track Content populated by JS -->
+            </div>
+            <!-- Loading Indicator (Moved outside track) -->
+            <div id="loading-indicator" class="loading-container">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <p>Loading Timeline Data...</p>
+            </div>
+        </main>
+
+        <!-- Side Panel (Model Details) -->
+        <aside class="side-panel glass-panel" id="side-panel">
+            <div class="panel-header">
+                <h3>SPECIFICATIONS</h3>
+                <button class="close-panel" id="close-panel"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="panel-content" id="panel-content">
+                <!-- Dynamic Content -->
+            </div>
+        </aside>
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-backdrop"></div>
+        <button class="close-lightbox" id="close-lightbox"><i class="fas fa-times"></i></button>
+        <div class="lightbox-content glass-panel">
+            <div class="img-container">
+                <img src="" alt="Preview" id="lightbox-img">
+            </div>
+            <div class="lightbox-controls">
+                <i class="fas fa-search-minus"></i>
+                <input type="range" id="lightbox-zoom" min="1" max="3" step="0.1" value="1">
+                <i class="fas fa-search-plus"></i>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

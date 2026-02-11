@@ -1,0 +1,418 @@
+/* Miter Saw Timeline V5.2 Pixel Perfect (Width 120px Alignment) */
+
+:root {
+    --bg-gray: #F0F0F0;
+    --nav-gray: #D6D6D6;
+    --desc-gray: #E3E3E3;
+    --brand-red: #EC8282;
+    /* Bosch default */
+    --brand-color: var(--brand-red);
+    --text-primary: #000;
+    --text-secondary: #555;
+    --font-inter: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-inter);
+    background-color: var(--bg-gray);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* Header - Zero padding to control item width manually */
+#top-bar {
+    height: 60px;
+    background-color: var(--nav-gray);
+    display: flex;
+    align-items: center;
+    padding: 0;
+    font-weight: 700;
+    font-size: 14px;
+    gap: 0;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    height: 100%;
+    padding: 0 20px;
+    /* Default padding for subsequent items */
+}
+
+/* Align first item (Year Report) exactly with Sidebar */
+.nav-item:first-child {
+    width: 120px;
+    /* Matches Sidebar Width */
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.nav-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--brand-red);
+    margin-top: 4px;
+}
+
+.separator {
+    color: #888;
+    font-weight: 300;
+    margin: 0 5px;
+}
+
+/* Dropdown Menu Styles */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-label {
+    pointer-events: none;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    min-width: 140px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.15s;
+}
+
+.dropdown-option:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-option.active {
+    background-color: #eee;
+    font-weight: 700;
+}
+
+
+/* Wrapper */
+#content-wrapper {
+    display: flex;
+    height: calc(100vh - 60px);
+}
+
+/* Sidebar (a時間軸) - Wide Alignment */
+#sidebar {
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background: #f4f4f4;
+    border-right: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+#year-list {
+    flex: 1;
+    overflow-y: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    scrollbar-width: none;
+}
+
+#year-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Sidebar Buttons */
+.year-btn {
+    width: 80px;
+    height: 36px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-family: var(--font-inter);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.year-btn.active {
+    background: #EDC098;
+    border-color: #D69E6B;
+    transform: scale(1.05);
+}
+
+.nav-arrow-btn {
+    width: 20px;
+    height: 15px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-arrow-btn.up::after {
+    content: '';
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #EC8282;
+}
+
+.nav-arrow-btn.down::after {
+    content: '';
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #EC8282;
+}
+
+
+/* Main View */
+#main-view {
+    flex: 1;
+    padding: 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+#main-view::-webkit-scrollbar {
+    display: none;
+}
+
+/* Header Row (Title & New Model) */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+#brand-card {
+    background: #fff;
+    padding: 10px 40px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    position: absolute;
+    left: 250px;
+}
+
+#brand-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--brand-color);
+    letter-spacing: 0.5px;
+}
+
+.new-model-group {
+    position: absolute;
+    right: 0;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.new-model-text {
+    font-size: 24px;
+    font-weight: 800;
+    color: #000;
+}
+
+.chevron-red-down {
+    width: 14px;
+    height: 14px;
+    border-right: 4px solid var(--brand-red);
+    border-bottom: 4px solid var(--brand-red);
+    transform: rotate(45deg);
+    margin-top: 5px;
+    margin-right: 8px;
+}
+
+/* Top Description */
+#year-desc-box {
+    background-color: var(--desc-gray);
+    padding: 20px 30px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    border: none;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+
+/* Content Split Row (b | c) */
+#content-split-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    min-height: 500px;
+}
+
+/* b: Thumbs Grid - Fixed Width 320px */
+#thumb-grid {
+    width: 320px;
+    flex-shrink: 0;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 90px;
+    gap: 12px;
+    align-content: start;
+}
+
+.thumb-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+    height: 90px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.thumb-card:hover {
+    transform: scale(1.02);
+    z-index: 10;
+    border-color: #aaa;
+}
+
+.thumb-card.active {
+    border: 2px solid var(--brand-color);
+}
+
+.thumb-img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+
+/* c: Right Section Wrapper */
+#c-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* c-top: Specs + Image */
+#c-top {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    min-height: 350px;
+}
+
+/* Spec Panel */
+#spec-panel {
+    width: 300px;
+    flex-shrink: 0;
+    background-color: var(--desc-gray);
+    padding: 25px;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    border-radius: 0;
+}
+
+#spec-panel::-webkit-scrollbar {
+    display: none;
+}
+
+.spec-row {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+}
+
+.spec-key {
+    font-weight: 600;
+    color: #444;
+    width: 70px;
+    min-width: 70px;
+    text-align: right;
+}
+
+.spec-val {
+    font-weight: 500;
+    color: #111;
+    flex: 1;
+    text-align: left;
+}
+
+
+/* Feature Image Box */
+#feature-image-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+#feature-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+
+/* c-bottom: Bottom Desc */
+#bottom-desc-box {
+    background-color: var(--desc-gray);
+    padding: 25px;
+    min-height: 100px;
+    border: none;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
