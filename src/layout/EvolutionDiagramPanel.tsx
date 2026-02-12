@@ -8,27 +8,27 @@ interface EvolutionDiagramPanelProps {
 }
 
 const VIDEO_MAP: Record<string, string> = {
-    'Safety': '003 斜切鋸安規演進與技術標準史話.mp4',
-    'Sliding': '001 斜切鋸前置導軌與機械臂設計演變全錄.mp4',
-    'Ergonomics': '009 斜斷機人體工學與安全設計發展史.mp4',
-    'Cutting': '006 斜切鋸切削規格演進與機構安全設計指南.mp4',
-    'Visual': '007 斜切鋸視覺導引系統：雷射與陰影線的演進史.mp4',
-    'Durability': '008 斜切鋸耐久度設計與演進史.mp4',
-    'Dust': '004 斜切鋸集塵設計演進與安全規範報告.mp4',
-    'Electronic': '005 斜切鋸軟啟動與電子煞車技術演進史.mp4',
+    'Ergonomics': '001 斜斷機人體工學與安全設計發展史.mp4',
     'Portable': '002 便攜式斜切鋸設計演進與安規里程碑.mp4',
+    'Sliding': '003 斜切鋸前置導軌與機械臂設計演變全錄.mp4',
+    'Cutting': '004 斜切鋸切削規格演進與機構安全設計指南.mp4',
+    'Electronic': '005 斜切鋸軟啟動與電子煞車技術演進史.mp4',
+    'Visual': '006 斜切鋸視覺導引系統：雷射與陰影線的演進史.mp4',
+    'Dust': '007 斜切鋸集塵設計演進與安全規範報告.mp4',
+    'Durability': '008 斜切鋸耐久度設計與演進史.mp4',
+    'Safety': '009 斜切鋸安規演進與技術標準史話.mp4',
 };
 
 const IMAGE_MAP: Record<string, string> = {
-    'Safety': '003 斜切鋸安規演進與技術標準史話.jpg',
-    'Sliding': '001 斜切鋸前置導軌與機械臂設計演變全錄.jpg',
-    'Ergonomics': '009 斜斷機人體工學與安全設計發展史.jpg',
-    'Cutting': '006 斜切鋸切削規格演進與機構安全設計指南.jpg',
-    'Visual': '007 斜切鋸視覺導引系統：雷射與陰影線的演進史.jpg',
-    'Durability': '008 斜切鋸耐久度設計與演進史.jpg',
-    'Dust': '004 斜切鋸集塵設計演進與安全規範報告.jpg',
-    'Electronic': '005 斜切鋸軟啟動與電子煞車技術演進史.jpg',
+    'Ergonomics': '001 斜斷機人體工學與安全設計發展史.jpg',
     'Portable': '002 便攜式斜切鋸設計演進與安規里程碑.jpg',
+    'Sliding': '003 斜切鋸前置導軌與機械臂設計演變全錄.jpg',
+    'Cutting': '004 斜切鋸切削規格演進與機構安全設計指南.jpg',
+    'Electronic': '005 斜切鋸軟啟動與電子煞車技術演進史.jpg',
+    'Visual': '006 斜切鋸視覺導引系統：雷射與陰影線的演進史.jpg',
+    'Dust': '007 斜切鋸集塵設計演進與安全規範報告.jpg',
+    'Durability': '008 斜切鋸耐久度設計與演進史.jpg',
+    'Safety': '009 斜切鋸安規演進與技術標準史話.jpg',
     'Global': '0000.jpg',
 };
 

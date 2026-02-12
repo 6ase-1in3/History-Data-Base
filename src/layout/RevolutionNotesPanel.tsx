@@ -15,15 +15,15 @@ interface RevolutionNotesPanelProps {
 // Category Configuration (Label + Color)
 // Explicit Tailwind classes required for JIT
 const CATEGORIES = [
-    { id: 'Safety', label: 'Safety', color: 'border-l-red-500', dotColor: 'bg-red-500', lightColor: 'bg-red-50' },
-    { id: 'Sliding', label: 'Sliding', color: 'border-l-blue-500', dotColor: 'bg-blue-500', lightColor: 'bg-blue-50' },
     { id: 'Ergonomics', label: 'Ergonomics', color: 'border-l-green-500', dotColor: 'bg-green-500', lightColor: 'bg-green-50' },
-    { id: 'Cutting', label: 'Cutting', color: 'border-l-orange-500', dotColor: 'bg-orange-500', lightColor: 'bg-orange-50' },
-    { id: 'Visual', label: 'Visual', color: 'border-l-purple-500', dotColor: 'bg-purple-500', lightColor: 'bg-purple-50' },
-    { id: 'Durability', label: 'Durability', color: 'border-l-slate-500', dotColor: 'bg-slate-500', lightColor: 'bg-slate-50' },
-    { id: 'Dust', label: 'Dust', color: 'border-l-teal-500', dotColor: 'bg-teal-500', lightColor: 'bg-teal-50' },
-    { id: 'Electronic', label: 'Electronic', color: 'border-l-amber-500', dotColor: 'bg-amber-500', lightColor: 'bg-amber-50' },
     { id: 'Portable', label: 'Portable', color: 'border-l-indigo-500', dotColor: 'bg-indigo-500', lightColor: 'bg-indigo-50' },
+    { id: 'Sliding', label: 'Sliding', color: 'border-l-blue-500', dotColor: 'bg-blue-500', lightColor: 'bg-blue-50' },
+    { id: 'Cutting', label: 'Cutting', color: 'border-l-orange-500', dotColor: 'bg-orange-500', lightColor: 'bg-orange-50' },
+    { id: 'Electronic', label: 'Electronic', color: 'border-l-amber-500', dotColor: 'bg-amber-500', lightColor: 'bg-amber-50' },
+    { id: 'Visual', label: 'Visual', color: 'border-l-purple-500', dotColor: 'bg-purple-500', lightColor: 'bg-purple-50' },
+    { id: 'Dust', label: 'Dust', color: 'border-l-teal-500', dotColor: 'bg-teal-500', lightColor: 'bg-teal-50' },
+    { id: 'Durability', label: 'Durability', color: 'border-l-slate-500', dotColor: 'bg-slate-500', lightColor: 'bg-slate-50' },
+    { id: 'Safety', label: 'Safety', color: 'border-l-red-500', dotColor: 'bg-red-500', lightColor: 'bg-red-50' },
 ] as const;
 
 type CategoryId = typeof CATEGORIES[number]['id'];
@@ -35,11 +35,11 @@ interface NoteBarProps {
     colorClass: string;
     highlightColor: string; // Passed explicitly
     selectedBrand: string;
-    isFiltered: boolean; // New prop
+    isHighlighted: boolean; // Controls background color
     onModelClick: (modelId: string) => void;
 }
 
-const NoteBar: React.FC<NoteBarProps> = ({ category, content, colorClass, highlightColor, selectedBrand, isFiltered, onModelClick }) => {
+const NoteBar: React.FC<NoteBarProps> = ({ category, content, colorClass, highlightColor, selectedBrand, isHighlighted, onModelClick }) => {
     const [isOpen, setIsOpen] = useState(true);
 
     const titleMatch = content.match(/«(.*?)(:|$)/);
@@ -60,7 +60,7 @@ const NoteBar: React.FC<NoteBarProps> = ({ category, content, colorClass, highli
     let containerStyle = 'bg-white';
     if (isBrandHighlighted) {
         containerStyle = 'ring-2 ring-yellow-400 bg-yellow-50';
-    } else if (isFiltered) {
+    } else if (isHighlighted) {
         containerStyle = highlightColor;
     }
 
@@ -114,8 +114,8 @@ const NoteBar: React.FC<NoteBarProps> = ({ category, content, colorClass, highli
                     className={`w-full flex items-center justify-between px-4 py-3 bg-transparent hover:bg-black/5 transition-colors text-left`}
                 >
                     <div className="font-semibold text-slate-800 flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{category}</span>
-                        <span>{mainTitle}</span>
+                        <span className="text-sm font-black text-slate-700 uppercase tracking-widest mr-2">{category}</span>
+                        <span className="font-medium text-slate-900">{mainTitle}</span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -130,33 +130,47 @@ const NoteBar: React.FC<NoteBarProps> = ({ category, content, colorClass, highli
 };
 
 export const RevolutionNotesPanel: React.FC<RevolutionNotesPanelProps> = ({ data, selectedBrand, onModelClick }) => {
-    // State for filtering
+    // State for filtering (Visibility)
     const [selectedCategories, setSelectedCategories] = useState<Set<CategoryId>>(
-        new Set(CATEGORIES.map(c => c.id)) // Default select all
+        new Set(CATEGORIES.map(c => c.id)) // Default select all (Show all)
+    );
+
+    // State for highlighting (Background Color)
+    const [highlightedCategories, setHighlightedCategories] = useState<Set<CategoryId>>(
+        new Set() // Default none highlighted (White background)
     );
 
     // Diagram Modal State
     const [diagramCategory, setDiagramCategory] = useState<string | null>(null);
 
-    const toggleCategory = (id: CategoryId) => {
+    const toggleFilter = (id: CategoryId) => {
         const next = new Set(selectedCategories);
         if (next.has(id)) {
             next.delete(id);
         } else {
             next.add(id);
         }
-        if (next.size === 0) {
-            setSelectedCategories(new Set(CATEGORIES.map(c => c.id)));
-            return;
-        }
+        // User requested ability to deselect all (to select just one), so we allow empty state.
         setSelectedCategories(next);
     };
 
+    const selectAll = () => setSelectedCategories(new Set(CATEGORIES.map(c => c.id)));
+    const clearAll = () => setSelectedCategories(new Set());
+
+    const toggleHighlight = (id: CategoryId) => {
+        const next = new Set(highlightedCategories);
+        if (next.has(id)) {
+            next.delete(id);
+        } else {
+            next.add(id);
+        }
+        setHighlightedCategories(next);
+    };
+
     const handleCategoryClick = (id: CategoryId) => {
-        // Restore: Toggle by default (User wants multi-select easy access)
-        // If user wants "Focus", they can click others off, or we provide a "Focus" action elsewhere?
-        // Actually, let's just use toggle.
-        toggleCategory(id);
+        // Legacy handler remap if needed, or remove usage. 
+        // Currently UI uses toggleHighlight / toggleFilter directly.
+        toggleFilter(id);
     };
 
     const yearEntries = useMemo(() => {
@@ -183,6 +197,21 @@ export const RevolutionNotesPanel: React.FC<RevolutionNotesPanelProps> = ({ data
                     <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Filter Dimensions</h2>
                     <div className="flex items-center gap-2">
                         <button
+                            onClick={selectAll}
+                            className="px-2 py-1 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors"
+                            title="Select All Filters"
+                        >
+                            Select All
+                        </button>
+                        <button
+                            onClick={clearAll}
+                            className="px-2 py-1 text-xs font-semibold text-slate-600 hover:text-red-600 hover:bg-slate-100 rounded transition-colors"
+                            title="Clear All Filters"
+                        >
+                            Clear
+                        </button>
+                        <div className="w-px h-4 bg-slate-300 mx-1"></div>
+                        <button
                             onClick={() => setDiagramCategory('Global')}
                             className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 transition-colors"
                         >
@@ -194,42 +223,49 @@ export const RevolutionNotesPanel: React.FC<RevolutionNotesPanelProps> = ({ data
 
                 <div className="flex flex-wrap gap-3">
                     {CATEGORIES.map(cat => {
-                        const isSelected = selectedCategories.has(cat.id);
+                        const isFiltered = selectedCategories.has(cat.id);
+                        const isHighlighted = highlightedCategories.has(cat.id);
+
                         return (
                             <div
                                 key={cat.id}
-                                className={`
-                                    flex items-center rounded-full border transition-all overflow-hidden
-                                    ${isSelected
-                                        ? 'bg-gray-800 text-white border-gray-800 shadow-sm'
-                                        : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
-                                    }
-                                `}
+                                className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all"
                             >
-                                {/* Main Filter Button */}
+                                {/* Toggle Button (Indicator -> Highlight) */}
                                 <button
-                                    onClick={() => handleCategoryClick(cat.id)}
-                                    className="px-3 py-1.5 text-xs font-semibold flex items-center hover:bg-opacity-80 transition-colors"
+                                    onClick={() => toggleHighlight(cat.id)}
+                                    className={`
+                                        w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors
+                                        ${isHighlighted ? `border-transparent ${cat.dotColor}` : 'border-slate-300 bg-slate-50 hover:border-slate-400'}
+                                    `}
+                                    title={`Highlight ${cat.label}`}
                                 >
-                                    {/* Explicit dot color to fix missing indicators */}
-                                    <span className={`w-2 h-2 rounded-full mr-2 ${cat.dotColor}`}></span>
+                                    {isHighlighted && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                                </button>
+
+                                {/* Label (Text -> Filter) */}
+                                <button
+                                    onClick={() => toggleFilter(cat.id)}
+                                    className={`text-xs ml-1 px-2 py-1 rounded transition-all duration-200 ${selectedCategories.size < CATEGORIES.length && isFiltered
+                                        ? 'bg-slate-800 text-white font-bold shadow-md transform scale-105'
+                                        : 'text-slate-600 font-semibold hover:bg-slate-100'
+                                        }`}
+                                    title={`Filter by ${cat.label}`}
+                                >
                                     {cat.label}
                                 </button>
 
-                                {/* Divider */}
-                                <div className={`w-px h-4 ${isSelected ? 'bg-gray-600' : 'bg-gray-200'}`}></div>
+                                {/* Vertical Divider */}
+                                <div className="w-px h-3 bg-slate-200 mx-1"></div>
 
-                                {/* Diagram Button (Small Internal Button) */}
+                                {/* Chart Button */}
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setDiagramCategory(cat.id);
                                     }}
-                                    className={`
-                                        px-2 py-1.5 flex items-center justify-center hover:bg-opacity-80 transition-colors
-                                        ${isSelected ? 'hover:bg-gray-700 text-blue-300' : 'hover:bg-gray-100 text-gray-400 hover:text-blue-600'}
-                                    `}
-                                    title={`View ${cat.label} Evolution Diagram`}
+                                    className="p-1 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                    title={`View ${cat.label} Diagram`}
                                 >
                                     <BarChart2 size={14} />
                                 </button>
@@ -265,7 +301,7 @@ export const RevolutionNotesPanel: React.FC<RevolutionNotesPanelProps> = ({ data
                                             colorClass={note.color}
                                             highlightColor={catConfig?.lightColor || 'bg-gray-50'}
                                             selectedBrand={selectedBrand}
-                                            isFiltered={selectedCategories.size < CATEGORIES.length}
+                                            isHighlighted={highlightedCategories.has(note.category)}
                                             onModelClick={onModelClick}
                                         />
                                     );
