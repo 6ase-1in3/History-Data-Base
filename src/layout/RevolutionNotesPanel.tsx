@@ -167,11 +167,6 @@ export const RevolutionNotesPanel: React.FC<RevolutionNotesPanelProps> = ({ data
         setHighlightedCategories(next);
     };
 
-    const handleCategoryClick = (id: CategoryId) => {
-        // Legacy handler remap if needed, or remove usage. 
-        // Currently UI uses toggleHighlight / toggleFilter directly.
-        toggleFilter(id);
-    };
 
     const yearEntries = useMemo(() => {
         return data.map(row => {
