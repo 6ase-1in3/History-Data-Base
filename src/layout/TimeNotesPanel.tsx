@@ -18,23 +18,23 @@ interface NoteBarProps {
 const NoteBar: React.FC<NoteBarProps> = ({ label, content, variant }) => {
     const [open, setOpen] = useState(false);
 
-    const bg = variant === 'issue'
-        ? 'bg-[#f28b82]'      // red / pink for issues
-        : 'bg-[#e0e0e0]';     // neutral gray
+    const bgClass = variant === 'issue'
+        ? 'bg-red-500/90'
+        : variant === 'market'
+            ? 'bg-[var(--slate-700)]'
+            : 'bg-[var(--slate-600)]';
 
-    const textColor = variant === 'issue' ? 'text-white' : 'text-black';
+    const borderClass = variant === 'market' ? 'border-l-4 border-l-blue-400'
+        : variant === 'tech' ? 'border-l-4 border-l-emerald-400'
+            : 'border-l-4 border-l-red-400';
 
     const hasContent = !!content && content.trim().length > 0;
 
-    const borderClass = variant === 'market' ? 'border-l-4 border-l-blue-500'
-        : variant === 'tech' ? 'border-l-4 border-l-green-500'
-            : '';
-
     if (!hasContent) {
         return (
-            <div className="mb-1">
-                <div className={`${bg} ${borderClass} w-full flex items-center justify-between px-4 py-3 rounded-sm`}>
-                    <span className={`font-sans font-bold text-[16px] ${textColor} text-left flex-1`}>
+            <div className="mb-1.5">
+                <div className={`${bgClass} ${borderClass} w-full flex items-center justify-between px-4 py-3 rounded-lg`}>
+                    <span className="font-sans font-semibold text-[14px] text-white text-left flex-1">
                         {label}
                     </span>
                 </div>
@@ -43,26 +43,25 @@ const NoteBar: React.FC<NoteBarProps> = ({ label, content, variant }) => {
     }
 
     return (
-        <div className="mb-1">
+        <div className="mb-1.5">
             {/* collapsed bar */}
             <button
                 onClick={() => setOpen(!open)}
-                className={`${bg} ${borderClass} w-full flex items-center justify-between px-4 py-3 rounded-sm
-                    transition-colors hover:brightness-95`}
+                className={`${bgClass} ${borderClass} w-full flex items-center justify-between px-4 py-3 rounded-lg
+                    transition-all hover:brightness-110`}
             >
-                <span className={`font-sans font-bold text-[16px] ${textColor} text-left flex-1`}>
+                <span className="font-sans font-semibold text-[14px] text-white text-left flex-1">
                     {label}
                 </span>
                 <ChevronDown
-                    className={`w-5 h-5 ${variant === 'issue' ? 'text-white' : 'text-[#FD0000]'}
-                        transition-transform ${open ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 text-white/60 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                     strokeWidth={2.5}
                 />
             </button>
 
             {/* expanded content */}
             {open && (
-                <div className="bg-white border border-gray-200 px-5 py-4 text-[14px] leading-relaxed text-gray-800 font-sans whitespace-pre-wrap">
+                <div className="bg-white border border-slate-200 px-5 py-4 text-[14px] leading-relaxed text-slate-700 font-sans whitespace-pre-wrap rounded-b-lg -mt-1">
                     {content}
                 </div>
             )}
@@ -88,8 +87,6 @@ export const TimeNotesPanel: React.FC<TimeNotesPanelProps> = ({
         filtered.forEach(d => {
             const y = parseInt(d.Year);
             if (!isNaN(y) && y <= 2025) yearSet.add(y);
-
-
         });
 
         const brandSafety = selectedBrand === 'Global'
@@ -136,23 +133,23 @@ export const TimeNotesPanel: React.FC<TimeNotesPanelProps> = ({
     }, [yearEntries, stepSize]);
 
     return (
-        <div className="flex-1 overflow-y-auto bg-[#f1f1f1] relative">
+        <div className="flex-1 overflow-y-auto bg-[var(--slate-50)] relative custom-scrollbar">
             {/* ── Top-right toggle ── */}
-            <div className="sticky top-0 z-10 flex justify-end px-8 py-3 bg-[#f1f1f1]">
-                <div className="flex items-center gap-2 font-sans text-[14px] text-gray-600 select-none">
+            <div className="sticky top-0 z-10 flex justify-end px-8 py-3 bg-[var(--slate-50)] border-b border-slate-200">
+                <div className="flex items-center gap-2 font-sans text-[13px] text-slate-500 select-none">
                     <span className="font-medium">Display by</span>
                     <button
                         onClick={() => setStepSize(1)}
-                        className={`px-2 py-0.5 rounded font-bold transition-colors
-                            ${stepSize === 1 ? 'bg-black text-white' : 'text-[#FD0000] hover:bg-gray-200'}`}
+                        className={`px-2.5 py-1 rounded-full font-bold text-xs transition-all
+                            ${stepSize === 1 ? 'bg-[var(--slate-900)] text-white' : 'text-slate-600 hover:bg-slate-100'}`}
                     >
                         01
                     </button>
-                    <span>/</span>
+                    <span className="text-slate-300">/</span>
                     <button
                         onClick={() => setStepSize(5)}
-                        className={`px-2 py-0.5 rounded font-bold transition-colors
-                            ${stepSize === 5 ? 'bg-black text-white' : 'text-black hover:bg-gray-200'}`}
+                        className={`px-2.5 py-1 rounded-full font-bold text-xs transition-all
+                            ${stepSize === 5 ? 'bg-[var(--slate-900)] text-white' : 'text-slate-600 hover:bg-slate-100'}`}
                     >
                         05
                     </button>
@@ -163,7 +160,7 @@ export const TimeNotesPanel: React.FC<TimeNotesPanelProps> = ({
             {/* ── Timeline rows ── */}
             <div className="relative pl-[160px] pr-8 pb-16">
                 {/* Vertical line */}
-                <div className="absolute left-[148px] top-0 bottom-0 w-[2px] bg-gray-400" />
+                <div className="absolute left-[148px] top-0 bottom-0 w-[2px] bg-slate-300" />
 
                 {displayEntries.map((entry) => {
                     // STRICT MAPPING
@@ -180,11 +177,11 @@ export const TimeNotesPanel: React.FC<TimeNotesPanelProps> = ({
                         <div key={entry.year} className="relative mb-12">
                             {/* Year label + dot */}
                             <div className="absolute left-[-162px] top-0 flex items-center gap-4">
-                                <span className="font-sans font-bold text-[32px] text-black w-[120px] text-right tracking-wide">
+                                <span className="font-sans font-extrabold text-[28px] text-slate-900 w-[120px] text-right tracking-tight">
                                     {entry.year}
                                 </span>
                                 <div className="w-[28px] flex items-center justify-center">
-                                    <div className="w-3 h-3 bg-black rounded-full" />
+                                    <div className="w-3 h-3 bg-[var(--brand-blue)] rounded-full shadow-sm shadow-blue-300" />
                                 </div>
                             </div>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface MarketInfoProps {
@@ -16,11 +17,12 @@ const CollapsibleSection: React.FC<{ title: string; content?: string; defaultOpe
         <div className="mb-4">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center w-full text-left font-bold text-black text-lg mb-2 focus:outline-none hover:text-gray-600 transition-colors"
+                className="flex items-center w-full text-left font-bold text-slate-900 text-base mb-2 focus:outline-none hover:text-slate-600 transition-colors group"
             >
-                <div className={`transform transition-transform duration-200 mr-2 ${isOpen ? 'rotate-90' : ''}`}>
-                    ▶
-                </div>
+                <ChevronRight
+                    className={`w-4 h-4 mr-2 text-slate-400 transition-transform duration-200 group-hover:text-blue-500 ${isOpen ? 'rotate-90' : ''}`}
+                    strokeWidth={2.5}
+                />
                 {title}
             </button>
             <AnimatePresence>
@@ -32,7 +34,7 @@ const CollapsibleSection: React.FC<{ title: string; content?: string; defaultOpe
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                     >
-                        <div className="text-black text-[16px] leading-relaxed whitespace-pre-line font-sans pl-6 border-l-2 border-gray-200">
+                        <div className="text-slate-700 text-[14px] leading-relaxed whitespace-pre-line font-sans pl-6 border-l-2 border-slate-200">
                             {content}
                         </div>
                     </motion.div>
@@ -58,7 +60,7 @@ const MarketInfo: React.FC<MarketInfoProps> = ({ year, notes, techNotes }) => {
                         <CollapsibleSection title="技術特點 (Tech Notes)" content={techNotes} defaultOpen={false} />
 
                         {!notes && !techNotes && (
-                            <div className="text-gray-500 italic">No data available for {year}.</div>
+                            <div className="text-slate-400 italic">No data available for {year}.</div>
                         )}
                     </motion.div>
                 </AnimatePresence>

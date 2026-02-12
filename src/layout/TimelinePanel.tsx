@@ -24,24 +24,24 @@ interface ExpandedCardProps {
 }
 
 const ExpandedCard: React.FC<ExpandedCardProps> = ({ title, content, variant, onClose }) => {
-    const bg = variant === 'issue' ? 'bg-[#f5d0c5]' : 'bg-[#f0f0f0]';
-    const headerBg = variant === 'issue' ? 'bg-[#f28b82]' : 'bg-[#d0d0d0]';
-    const headerText = variant === 'issue' ? 'text-white' : 'text-black';
+    const bg = variant === 'issue' ? 'bg-red-50' : 'bg-white';
+    const headerBg = variant === 'issue' ? 'bg-red-500/90' : variant === 'tech' ? 'bg-[var(--slate-600)]' : 'bg-[var(--slate-700)]';
+    const headerText = 'text-white';
     const tagLabel = variant === 'issue' ? 'Issue Note' : variant === 'tech' ? 'Tech Note' : 'Market Note';
 
     return (
-        <div className={`${bg} rounded-md shadow-xl border border-gray-300 w-[500px] max-h-[500px] overflow-hidden flex flex-col`}>
+        <div className={`${bg} rounded-xl shadow-2xl border border-slate-200 w-[500px] max-h-[500px] overflow-hidden flex flex-col`}>
             <div className={`${headerBg} px-4 py-3 flex items-center justify-between`}>
-                <span className={`font-sans font-bold text-[15px] ${headerText}`}>{tagLabel}</span>
-                <button onClick={onClose} className="text-gray-500 hover:text-black transition-colors">
+                <span className={`font-sans font-bold text-[14px] ${headerText}`}>{tagLabel}</span>
+                <button onClick={onClose} className="text-white/60 hover:text-white transition-colors">
                     <ChevronUp className="w-5 h-5" strokeWidth={2.5} />
                 </button>
             </div>
             <div className="px-4 pt-3 pb-1">
-                <h3 className="font-sans font-bold text-[16px] text-black">{title}</h3>
+                <h3 className="font-sans font-bold text-[15px] text-slate-900">{title}</h3>
             </div>
             <div className="px-4 pb-4 overflow-y-auto flex-1">
-                <p className="font-sans text-[13px] leading-relaxed text-gray-700 whitespace-pre-wrap">{content}</p>
+                <p className="font-sans text-[13px] leading-relaxed text-slate-600 whitespace-pre-wrap">{content}</p>
             </div>
         </div>
     );
@@ -60,11 +60,11 @@ interface CardLabelProps {
 }
 
 const CardLabel: React.FC<CardLabelProps> = ({ label, variant, position, onClick, isActive, cardWidth, yearWidth, isClosest }) => {
-    const bg = variant === 'issue' ? 'bg-[#f28b82]' : 'bg-[#e0e0e0]';
-    const textColor = variant === 'issue' ? 'text-white' : 'text-black';
-    const borderClass = variant === 'market' ? 'border-l-4 border-l-blue-500'
-        : variant === 'tech' ? 'border-l-4 border-l-green-500'
-            : '';
+    const bg = variant === 'issue' ? 'bg-red-500/90' : variant === 'tech' ? 'bg-[var(--slate-600)]' : 'bg-[var(--slate-700)]';
+    const textColor = 'text-white';
+    const borderClass = variant === 'market' ? 'border-l-4 border-l-blue-400'
+        : variant === 'tech' ? 'border-l-4 border-l-emerald-400'
+            : 'border-l-4 border-l-red-400';
 
     // Arrow should be at the center of the year column
     const arrowLeft = yearWidth / 2 - 6; // 6 = half of arrow width (12px)
@@ -76,23 +76,23 @@ const CardLabel: React.FC<CardLabelProps> = ({ label, variant, position, onClick
             {/* Arrow pointing up (below cards) */}
             {position === 'below' && isClosest && (
                 <div style={{ paddingLeft: arrowLeft }}>
-                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] border-b-gray-400" />
+                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] border-b-slate-400" />
                 </div>
             )}
 
             <button
                 onClick={onClick}
-                className={`${bg} ${borderClass} flex items-center justify-between px-3 py-2 rounded-sm
-                    transition-all hover:brightness-95 cursor-pointer
-                    ${isActive ? 'ring-2 ring-black ring-offset-1' : ''}`}
+                className={`${bg} ${borderClass} flex items-center justify-between px-3 py-2 rounded-lg
+                    transition-all hover:brightness-110 cursor-pointer
+                    ${isActive ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}
                 style={{ width: cardWidth }}
             >
                 <span className={`font-sans font-bold text-[11px] ${textColor} text-left flex-1`}>
                     {label}
                 </span>
                 <ChevronDown
-                    className={`w-3.5 h-3.5 ml-1 flex-shrink-0 ${variant === 'issue' ? 'text-white' : 'text-[#FD0000]'}
-                        transition-transform ${isActive ? 'rotate-180' : ''}`}
+                    className={`w-3.5 h-3.5 ml-1 flex-shrink-0 text-white/60
+                        transition-transform duration-200 ${isActive ? 'rotate-180' : ''}`}
                     strokeWidth={2.5}
                 />
             </button>
@@ -100,7 +100,7 @@ const CardLabel: React.FC<CardLabelProps> = ({ label, variant, position, onClick
             {/* Arrow pointing down (above cards) */}
             {position === 'above' && isClosest && (
                 <div style={{ paddingLeft: arrowLeft }}>
-                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-gray-400" />
+                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-slate-400" />
                 </div>
             )}
         </div>
@@ -212,44 +212,44 @@ export const TimelinePanel: React.FC<TimelinePanelProps> = ({
     const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#f1f1f1] relative">
+        <div className="flex-1 flex flex-col overflow-hidden bg-[var(--slate-50)] relative">
             {/* Toggle & Zoom */}
-            <div className="flex justify-end px-8 py-3 bg-[#f1f1f1] shrink-0 z-10">
+            <div className="flex justify-end px-8 py-3 bg-[var(--slate-50)] border-b border-slate-200 shrink-0 z-10">
                 <div className="flex items-center gap-4">
                     {/* Zoom Controls */}
                     <div className="flex items-center gap-2 select-none">
-                        <span className="font-sans text-[14px] text-gray-600 font-medium">Zoom ({(zoomLevel * 100).toFixed(0)}%)</span>
+                        <span className="font-sans text-[13px] text-slate-500 font-medium">Zoom ({(zoomLevel * 100).toFixed(0)}%)</span>
                         <button
                             onClick={handleZoomOut}
-                            className="w-6 h-6 flex items-center justify-center rounded bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 shadow-sm"
+                            className="w-7 h-7 flex items-center justify-center rounded-full bg-[var(--slate-900)] text-white hover:bg-[var(--slate-700)] shadow-sm text-sm font-bold transition-colors"
                             title="Zoom Out"
                         >
-                            -
+                            −
                         </button>
                         <button
                             onClick={handleZoomIn}
-                            className="w-6 h-6 flex items-center justify-center rounded bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 shadow-sm"
+                            className="w-7 h-7 flex items-center justify-center rounded-full bg-[var(--slate-900)] text-white hover:bg-[var(--slate-700)] shadow-sm text-sm font-bold transition-colors"
                             title="Zoom In"
                         >
                             +
                         </button>
                     </div>
 
-                    <div className="w-[1px] h-4 bg-gray-300 mx-2" />
+                    <div className="w-px h-4 bg-slate-300 mx-2" />
 
                     {/* Display by */}
-                    <div className="flex items-center gap-2 font-sans text-[14px] text-gray-600 select-none">
+                    <div className="flex items-center gap-2 font-sans text-[13px] text-slate-500 select-none">
                         <span className="font-medium">Display by</span>
                         <button
                             onClick={() => setStepSize(1)}
-                            className={`px-2 py-0.5 rounded font-bold transition-colors
-                            ${stepSize === 1 ? 'bg-black text-white' : 'text-[#FD0000] hover:bg-gray-200'}`}
+                            className={`px-2.5 py-1 rounded-full font-bold text-xs transition-all
+                            ${stepSize === 1 ? 'bg-[var(--slate-900)] text-white' : 'text-slate-600 hover:bg-slate-100'}`}
                         >01</button>
-                        <span>/</span>
+                        <span className="text-slate-300">/</span>
                         <button
                             onClick={() => setStepSize(5)}
-                            className={`px-2 py-0.5 rounded font-bold transition-colors
-                            ${stepSize === 5 ? 'bg-black text-white' : 'text-black hover:bg-gray-200'}`}
+                            className={`px-2.5 py-1 rounded-full font-bold text-xs transition-all
+                            ${stepSize === 5 ? 'bg-[var(--slate-900)] text-white' : 'text-slate-600 hover:bg-slate-100'}`}
                         >05</button>
                         <span className="font-medium ml-1">years</span>
                     </div>
@@ -297,7 +297,7 @@ export const TimelinePanel: React.FC<TimelinePanelProps> = ({
                     {/* ── Horizontal axis + year dots ── */}
                     <div className="relative shrink-0" style={{ height: 56 }}>
                         <div
-                            className="absolute top-[18px] left-0 h-[2px] bg-gray-400"
+                            className="absolute top-[18px] left-0 h-[2px] bg-slate-300"
                             style={{ width: displayEntries.length * YEAR_WIDTH }}
                         />
                         <div className="flex">
@@ -307,10 +307,10 @@ export const TimelinePanel: React.FC<TimelinePanelProps> = ({
                                     className="flex flex-col items-center"
                                     style={{ width: YEAR_WIDTH, flexShrink: 0 }}
                                 >
-                                    <div className="w-[12px] h-[12px] bg-black rounded-full relative z-[2]"
+                                    <div className="w-[12px] h-[12px] bg-[var(--brand-blue)] rounded-full relative z-[2] shadow-sm shadow-blue-300"
                                         style={{ marginTop: 12 }}
                                     />
-                                    <span className="font-sans font-bold text-[18px] text-black mt-0.5 select-none">
+                                    <span className="font-sans font-bold text-[16px] text-slate-900 mt-0.5 select-none">
                                         {entry.year}
                                     </span>
                                 </div>

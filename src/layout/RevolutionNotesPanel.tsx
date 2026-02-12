@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, ExternalLink, BarChart2, Info } from 'lucide-react';
+import { ChevronDown, BarChart2, Info } from 'lucide-react';
 import { RevolutionData } from '../types';
 import { EvolutionDiagramPanel } from './EvolutionDiagramPanel'; // Now a Modal
 // Component handling ProductSidePanel logic is handled in App.tsx? 
@@ -13,16 +13,17 @@ interface RevolutionNotesPanelProps {
 }
 
 // Category Configuration (Label + Color)
+// Explicit Tailwind classes required for JIT
 const CATEGORIES = [
-    { id: 'Safety', label: 'Safety', color: 'border-l-red-500' },
-    { id: 'Sliding', label: 'Sliding', color: 'border-l-blue-500' },
-    { id: 'Ergonomics', label: 'Ergonomics', color: 'border-l-green-500' },
-    { id: 'Cutting', label: 'Cutting', color: 'border-l-orange-500' },
-    { id: 'Visual', label: 'Visual', color: 'border-l-purple-500' },
-    { id: 'Durability', label: 'Durability', color: 'border-l-slate-500' },
-    { id: 'Dust', label: 'Dust', color: 'border-l-teal-500' },
-    { id: 'Electronic', label: 'Electronic', color: 'border-l-amber-500' },
-    { id: 'Portable', label: 'Portable', color: 'border-l-indigo-500' },
+    { id: 'Safety', label: 'Safety', color: 'border-l-red-500', dotColor: 'bg-red-500', lightColor: 'bg-red-50' },
+    { id: 'Sliding', label: 'Sliding', color: 'border-l-blue-500', dotColor: 'bg-blue-500', lightColor: 'bg-blue-50' },
+    { id: 'Ergonomics', label: 'Ergonomics', color: 'border-l-green-500', dotColor: 'bg-green-500', lightColor: 'bg-green-50' },
+    { id: 'Cutting', label: 'Cutting', color: 'border-l-orange-500', dotColor: 'bg-orange-500', lightColor: 'bg-orange-50' },
+    { id: 'Visual', label: 'Visual', color: 'border-l-purple-500', dotColor: 'bg-purple-500', lightColor: 'bg-purple-50' },
+    { id: 'Durability', label: 'Durability', color: 'border-l-slate-500', dotColor: 'bg-slate-500', lightColor: 'bg-slate-50' },
+    { id: 'Dust', label: 'Dust', color: 'border-l-teal-500', dotColor: 'bg-teal-500', lightColor: 'bg-teal-50' },
+    { id: 'Electronic', label: 'Electronic', color: 'border-l-amber-500', dotColor: 'bg-amber-500', lightColor: 'bg-amber-50' },
+    { id: 'Portable', label: 'Portable', color: 'border-l-indigo-500', dotColor: 'bg-indigo-500', lightColor: 'bg-indigo-50' },
 ] as const;
 
 type CategoryId = typeof CATEGORIES[number]['id'];
@@ -32,11 +33,13 @@ interface NoteBarProps {
     category: CategoryId;
     content: string;
     colorClass: string;
+    highlightColor: string; // Passed explicitly
     selectedBrand: string;
+    isFiltered: boolean; // New prop
     onModelClick: (modelId: string) => void;
 }
 
-const NoteBar: React.FC<NoteBarProps> = ({ year, category, content, colorClass, selectedBrand, onModelClick }) => {
+const NoteBar: React.FC<NoteBarProps> = ({ category, content, colorClass, highlightColor, selectedBrand, isFiltered, onModelClick }) => {
     const [isOpen, setIsOpen] = useState(true);
 
     const titleMatch = content.match(/«(.*?)(:|$)/);
@@ -44,8 +47,22 @@ const NoteBar: React.FC<NoteBarProps> = ({ year, category, content, colorClass, 
 
     const brandMatch = content.match(/【(.*?)】/);
     const noteBrand = brandMatch ? brandMatch[1] : '';
-    const isHighlighted = selectedBrand !== 'Global' && noteBrand === selectedBrand;
-    const highlightStyle = isHighlighted ? 'ring-2 ring-yellow-400 bg-yellow-50' : 'bg-white';
+
+    // Brand Highlight (Standard)
+    const isBrandHighlighted = selectedBrand !== 'Global' && noteBrand === selectedBrand;
+
+    // Category Filter Highlight (User Request: "Indicator click -> Card bg change")
+    // When filtered, apply a light background tint matching the category color
+    // Extract base color from border class (e.g., 'border-l-red-500' -> 'bg-red-50')
+
+
+    // Determine final background style (Brand highlight takes precedence for visibility)
+    let containerStyle = 'bg-white';
+    if (isBrandHighlighted) {
+        containerStyle = 'ring-2 ring-yellow-400 bg-yellow-50';
+    } else if (isFiltered) {
+        containerStyle = highlightColor;
+    }
 
     const renderText = (text: string) => {
         const cleanText = text.replace(/[«»]/g, '');
@@ -91,19 +108,19 @@ const NoteBar: React.FC<NoteBarProps> = ({ year, category, content, colorClass, 
 
     return (
         <div className="mb-2">
-            <div className={`${highlightStyle} border text-left rounded-sm shadow-sm overflow-hidden ${colorClass} border-l-[6px] transition-all hover:shadow-md`}>
+            <div className={`${containerStyle} border text-left rounded-lg shadow-sm overflow-hidden ${colorClass} border-l-[6px] transition-all hover:shadow-md`}>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`w-full flex items-center justify-between px-4 py-3 ${isHighlighted ? 'bg-yellow-50 hover:bg-yellow-100' : 'bg-gray-50 hover:bg-gray-100'} transition-colors text-left`}
+                    className={`w-full flex items-center justify-between px-4 py-3 bg-transparent hover:bg-black/5 transition-colors text-left`}
                 >
-                    <div className="font-semibold text-gray-800 flex items-center gap-2">
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{category}</span>
+                    <div className="font-semibold text-slate-800 flex items-center gap-2">
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{category}</span>
                         <span>{mainTitle}</span>
                     </div>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isOpen && (
-                    <div className="px-4 py-3 text-sm text-gray-700 bg-white border-t border-gray-100 leading-relaxed">
+                    <div className="px-4 py-3 text-sm text-slate-700 bg-white/50 border-t border-slate-100 leading-relaxed">
                         {renderText(content)}
                     </div>
                 )}
@@ -159,11 +176,11 @@ export const RevolutionNotesPanel: React.FC<RevolutionNotesPanelProps> = ({ data
     }, [data, selectedCategories]);
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden bg-gray-100 h-full">
+        <div className="flex-1 flex flex-col overflow-hidden bg-[var(--slate-50)] h-full">
             {/* Filter Bar */}
-            <div className="bg-white border-b px-6 py-4 shadow-sm z-10">
+            <div className="bg-white border-b border-slate-200 px-6 py-4 shadow-sm z-10">
                 <div className="flex justify-between items-center mb-3">
-                    <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Filter Dimensions</h2>
+                    <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Filter Dimensions</h2>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setDiagramCategory('Global')}
@@ -191,10 +208,11 @@ export const RevolutionNotesPanel: React.FC<RevolutionNotesPanelProps> = ({ data
                             >
                                 {/* Main Filter Button */}
                                 <button
-                                    onClick={(e) => handleCategoryClick(cat.id)}
+                                    onClick={() => handleCategoryClick(cat.id)}
                                     className="px-3 py-1.5 text-xs font-semibold flex items-center hover:bg-opacity-80 transition-colors"
                                 >
-                                    <span className={`w-2 h-2 rounded-full mr-2 ${cat.color.replace('border-l-', 'bg-')}`}></span>
+                                    {/* Explicit dot color to fix missing indicators */}
+                                    <span className={`w-2 h-2 rounded-full mr-2 ${cat.dotColor}`}></span>
                                     {cat.label}
                                 </button>
 
@@ -219,39 +237,44 @@ export const RevolutionNotesPanel: React.FC<RevolutionNotesPanelProps> = ({ data
                         );
                     })}
                 </div>
-                <div className="mt-2 text-xs text-gray-400 text-right">
-                    (Shift+Click filter to multi-select • Click chart icon for diagram)
+                <div className="mt-2 text-xs text-slate-400 text-right">
+                    (Click filter to toggle • Click chart icon for diagram)
                 </div>
             </div>
 
             {/* Timeline Scroll Area */}
-            <div className="flex-1 overflow-y-auto px-6 py-8">
+            <div className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar">
                 <div className="max-w-4xl mx-auto space-y-12">
                     {yearEntries.map((entry, idx) => (
                         <div key={idx} className="relative">
-                            <div className="sticky top-0 z-0 flex items-center mb-4">
-                                <div className="bg-gray-800 text-white font-bold text-lg px-4 py-1 rounded-r-lg shadow-md -ml-6">
+                            <div className="flex items-center mb-4">
+                                <div className="bg-[var(--slate-900)] text-white font-bold text-lg px-4 py-1.5 rounded-r-lg shadow-md -ml-6">
                                     {entry.year}
                                 </div>
-                                <div className="h-px bg-gray-300 flex-1 ml-4 brightness-95"></div>
+                                <div className="h-px bg-slate-300 flex-1 ml-4"></div>
                             </div>
-                            <div className="pl-4 border-l-2 border-gray-200 ml-4 space-y-3">
-                                {entry.notes.map((note, noteIdx) => (
-                                    <NoteBar
-                                        key={noteIdx}
-                                        year={entry.year}
-                                        category={note.category}
-                                        content={note.content}
-                                        colorClass={note.color}
-                                        selectedBrand={selectedBrand}
-                                        onModelClick={onModelClick}
-                                    />
-                                ))}
+                            <div className="pl-4 border-l-2 border-slate-200 ml-4 space-y-3">
+                                {entry.notes.map((note, noteIdx) => {
+                                    const catConfig = CATEGORIES.find(c => c.id === note.category);
+                                    return (
+                                        <NoteBar
+                                            key={noteIdx}
+                                            year={entry.year}
+                                            category={note.category}
+                                            content={note.content}
+                                            colorClass={note.color}
+                                            highlightColor={catConfig?.lightColor || 'bg-gray-50'}
+                                            selectedBrand={selectedBrand}
+                                            isFiltered={selectedCategories.size < CATEGORIES.length}
+                                            onModelClick={onModelClick}
+                                        />
+                                    );
+                                })}
                             </div>
                         </div>
                     ))}
                     {yearEntries.length === 0 && (
-                        <div className="text-center text-gray-500 py-20">No records found.</div>
+                        <div className="text-center text-slate-400 py-20">No records found.</div>
                     )}
                 </div>
             </div>

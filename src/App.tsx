@@ -13,7 +13,7 @@ import { Loader2 } from 'lucide-react';
 function App() {
     const { marketData, modelData, safetyData, revolutionData, loading, error } = useData();
 
-    const [reportType, setReportType] = useState('Year Report');
+    const [reportType, setReportType] = useState('Revolution');
     const [category, setCategory] = useState('Miter Saw');
     const [selectedBrand, setSelectedBrand] = useState('Global');
 

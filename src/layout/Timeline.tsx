@@ -28,16 +28,16 @@ export const Timeline: React.FC<TimelineProps> = ({ selectedYear, onYearSelect, 
     const allYears = Array.from({ length: maxYear - minYear + 1 }, (_, i) => maxYear - i);
 
     return (
-        <div className="bg-[#f1f1f1] w-[120px] flex flex-col shrink-0 border-r border-[#d1d1d1] h-full">
-            <div className="flex items-center justify-center h-[60px] border-b border-[#d1d1d1] shrink-0">
-                <button className="hover:opacity-70 transition-opacity">
-                    <ChevronUp className="w-6 h-6 text-black" strokeWidth={2} />
+        <div className="bg-[var(--slate-900)] w-[110px] flex flex-col shrink-0 h-full">
+            <div className="flex items-center justify-center h-[48px] border-b border-white/10 shrink-0">
+                <button className="hover:opacity-70 transition-opacity p-2">
+                    <ChevronUp className="w-5 h-5 text-white/60" strokeWidth={2} />
                 </button>
             </div>
 
             <div
                 ref={containerRef}
-                className="flex-1 overflow-y-auto scrollbar-hide flex flex-col items-center"
+                className="flex-1 overflow-y-auto scrollbar-dark flex flex-col items-center"
             >
                 {allYears.map((year) => {
                     const isSelected = year === selectedYear;
@@ -51,19 +51,28 @@ export const Timeline: React.FC<TimelineProps> = ({ selectedYear, onYearSelect, 
                             onClick={() => isAvailable && onYearSelect(year)}
                             disabled={!isAvailable}
                             className={`
-                w-full h-[60px] flex items-center justify-center shrink-0 relative
-                border-b border-[#d1d1d1]
-                transition-colors
-                ${isSelected ? 'bg-[#edc098] text-black' : 'bg-white text-black hover:bg-gray-50'}
-                ${!isAvailable && 'opacity-50 cursor-not-allowed bg-[#e0e0e0]'}
-              `}
+                                w-full h-[52px] flex items-center justify-center shrink-0 relative
+                                border-b border-white/5
+                                transition-all duration-200
+                                ${isSelected
+                                    ? 'bg-[var(--brand-blue)] text-white shadow-lg shadow-blue-500/20'
+                                    : isAvailable
+                                        ? 'text-white/70 hover:bg-white/5 hover:text-white'
+                                        : 'text-white/20 cursor-not-allowed'
+                                }
+                            `}
                         >
-                            <span className={`font-sans text-[20px] leading-none ${isSelected ? 'font-bold' : 'font-normal'}`}>
+                            <span className={`font-sans text-[16px] leading-none ${isSelected ? 'font-bold' : 'font-medium'}`}>
                                 {year}
                             </span>
                             {count > 0 && (
-                                <span className={`absolute right-3 text-[14px] font-sans ${isSelected ? 'text-black font-bold' : 'text-[#888888] font-normal'}`}>
-                                    ({count})
+                                <span className={`absolute right-2 text-[11px] font-medium
+                                    ${isSelected
+                                        ? 'bg-white/20 text-white px-1.5 py-0.5 rounded-full'
+                                        : 'text-white/30'
+                                    }`}
+                                >
+                                    {count}
                                 </span>
                             )}
                         </button>
@@ -71,9 +80,9 @@ export const Timeline: React.FC<TimelineProps> = ({ selectedYear, onYearSelect, 
                 })}
             </div>
 
-            <div className="flex items-center justify-center h-[60px] border-t border-[#d1d1d1] shrink-0">
-                <button className="hover:opacity-70 transition-opacity">
-                    <ChevronDown className="w-6 h-6 text-black" strokeWidth={2} />
+            <div className="flex items-center justify-center h-[48px] border-t border-white/10 shrink-0">
+                <button className="hover:opacity-70 transition-opacity p-2">
+                    <ChevronDown className="w-5 h-5 text-white/60" strokeWidth={2} />
                 </button>
             </div>
         </div>
