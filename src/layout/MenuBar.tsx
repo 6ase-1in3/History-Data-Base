@@ -89,10 +89,6 @@ export const MenuBar: React.FC<MenuBarProps> = ({
     }, [openId]);
 
     const toggle = (id: string) => setOpenId(prev => prev === id ? null : id);
-    const select = (id: string, value: string, cb: (v: string) => void) => {
-        cb(value);
-        setOpenId(null);
-    };
 
     return (
         <div ref={barRef} className="bg-[var(--slate-900)] h-[64px] w-full relative flex items-center justify-between px-8 shadow-lg shrink-0">
@@ -109,7 +105,10 @@ export const MenuBar: React.FC<MenuBarProps> = ({
                 <Dropdown
                     value={reportType}
                     options={['Revolution', 'Year Report', 'Time Notes', 'Time Line']}
-                    onChange={(v) => select('report', v, onReportTypeChange)}
+                    onChange={(v) => {
+                        onReportTypeChange(v);
+                        setOpenId(null);
+                    }}
                     isOpen={openId === 'report'}
                     onToggle={() => toggle('report')}
                 />
@@ -119,7 +118,10 @@ export const MenuBar: React.FC<MenuBarProps> = ({
                 <Dropdown
                     value={category}
                     options={['Miter Saw', 'Circular Saw', 'Table Saw', 'Band Saw']}
-                    onChange={(v) => select('category', v, onCategoryChange)}
+                    onChange={(v) => {
+                        onCategoryChange(v);
+                        setOpenId(null);
+                    }}
                     isOpen={openId === 'category'}
                     onToggle={() => toggle('category')}
                 />
@@ -129,13 +131,16 @@ export const MenuBar: React.FC<MenuBarProps> = ({
                 <Dropdown
                     value={selectedBrand}
                     options={['Global', ...brands]}
-                    onChange={(v) => select('brand', v, onBrandChange)}
+                    onChange={(v) => {
+                        onBrandChange(v);
+                        setOpenId(null);
+                    }}
                     isOpen={openId === 'brand'}
                     onToggle={() => toggle('brand')}
                 />
             </div>
 
-            {/* Right: Spacer (future use: settings/avatar) */}
+            {/* Right: Spacer */}
             <div className="w-[120px]" />
         </div>
     );
